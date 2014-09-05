@@ -1,4 +1,10 @@
 <?php
+/* Debug: *
+error_reporting(-1); // to enable all errors
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+/* */
+
 /** WP Appdeck Plugin main class **/
 class ydApdkPlugin extends YD_Plugin {
 	
@@ -68,7 +74,16 @@ class ydApdkPlugin extends YD_Plugin {
 						'theme'			=> 'default'
 				)
 		);
-				
+		
+		/** Register the AppDeck menu for app templates **/
+		register_nav_menu( 'appdeck_top', __( 'Main menu in the Appdeck mobile application', 'appdeck' ) );
+		
+		/** Template switcher **/
+		add_filter( 'template_include', array( $this, 'var_template_include' ), 1000 );
+		add_filter( 'template', array( $this, 'template' ) );
+        add_filter( 'stylesheet', array( $this, 'stylesheet' ) );
+        add_filter( 'template_directory', array( $this, 'template_directory' ) );
+		
 		if( is_admin() ) {
 						
 			/** Create our admin menu and register our stylesheets **/
@@ -440,6 +455,22 @@ class ydApdkPlugin extends YD_Plugin {
 			echo '<p>Error: unknown AppDeck endpoint!</p>';
 			
 		}
+	}
+	
+	/**
+	 * Template switcher
+	 * 
+	 */
+	public function template_directory( $current ) {
+		
+		if( !isset( $_SERVER['HTTP_USER_AGENT'] ) || !preg_match( '/appdeck/i', $_SERVER['HTTP_USER_AGENT'] ) )
+			return $current;
+		
+		return $this->appdeck_settings['theme'];
+	}
+	function var_template_include( $t ){
+		//$GLOBALS['current_theme_template'] = basename($t);
+		return $this->appdeck_settings['theme'] . '/' . basename($t);
 	}
 }
 ?>
