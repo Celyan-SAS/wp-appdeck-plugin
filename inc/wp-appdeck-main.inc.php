@@ -80,9 +80,11 @@ class ydApdkPlugin extends YD_Plugin {
 		
 		/** Template switcher **/
 		add_filter( 'template_include', array( $this, 'var_template_include' ), 1000 );
-		add_filter( 'template', array( $this, 'template' ) );
-        add_filter( 'stylesheet', array( $this, 'stylesheet' ) );
         add_filter( 'template_directory', array( $this, 'template_directory' ) );
+        /*
+        add_filter( 'template', array( $this, 'template' ) );
+        add_filter( 'stylesheet', array( $this, 'stylesheet' ) );
+        */
 		
 		if( is_admin() ) {
 						
@@ -119,7 +121,8 @@ class ydApdkPlugin extends YD_Plugin {
 			'Appdeck', 
 			'activate_plugins', 
 			'appdeck-setup', 
-			array( $this, 'appdeckSetup'), 
+			//array( $this, 'appdeckSetup'),
+			array( $this, 'submenu_dashboard' ),
 			plugins_url( self::MENU_ICON, dirname( __FILE__ ) ), 
 			91
 		);
@@ -132,7 +135,7 @@ class ydApdkPlugin extends YD_Plugin {
 				$submenu_title, 
 				$submenu_title, 
 				'activate_plugins', 
-				'appdeck-setup/' . $submenu,
+				('dashboard'==$submenu)?'appdeck-setup':'appdeck-setup/' . $submenu,
 				array( $this, 'submenu_' . $submenu )
 			);
 		}
@@ -468,9 +471,23 @@ class ydApdkPlugin extends YD_Plugin {
 		
 		return $this->appdeck_settings['theme'];
 	}
-	function var_template_include( $t ){
+	public function var_template_include( $current ){
+		
+		if( !isset( $_SERVER['HTTP_USER_AGENT'] ) || !preg_match( '/appdeck/i', $_SERVER['HTTP_USER_AGENT'] ) )
+			return $current;
+		
 		//$GLOBALS['current_theme_template'] = basename($t);
-		return $this->appdeck_settings['theme'] . '/' . basename($t);
+		return $this->appdeck_settings['theme'] . '/' . basename( $current );
 	}
+	/*
+	public function template( $current ) {
+		if( !isset( $_SERVER['HTTP_USER_AGENT'] ) || !preg_match( '/appdeck/i', $_SERVER['HTTP_USER_AGENT'] ) )
+			return $current;
+	}
+	public function stylesheet( $current ) {
+		if( !isset( $_SERVER['HTTP_USER_AGENT'] ) || !preg_match( '/appdeck/i', $_SERVER['HTTP_USER_AGENT'] ) )
+			return $current;
+	}
+	*/
 }
 ?>
