@@ -77,10 +77,7 @@ class ydApdkPlugin extends YD_Plugin {
 		
 		/** Register the AppDeck menu for app templates **/
 		register_nav_menu( 'appdeck_top', __( 'Main menu in the Appdeck mobile application', 'appdeck' ) );
-		
-		/** Template switcher **/
-		add_filter( 'template_include', array( $this, 'var_template_include' ), 1000 );
-        add_filter( 'template_directory', array( $this, 'template_directory' ) );
+
         /*
         add_filter( 'template', array( $this, 'template' ) );
         add_filter( 'stylesheet', array( $this, 'stylesheet' ) );
@@ -108,6 +105,15 @@ class ydApdkPlugin extends YD_Plugin {
 			add_action( 'parse_request', array( $this, 'parseRequests' ) );
 			add_action( 'init', array( $this, 'addRewriteRule') );
 			//TODO: flush rewrite rules upon plugin install
+			
+			/** Template redirector ** not used
+			add_filter( 'template_include', array( $this, 'template_redirect' ) );
+			*/
+			
+			/** Template switcher **/
+			add_filter( 'template_include', array( $this, 'var_template_include' ), 1000 );
+			add_filter( 'template_directory', array( $this, 'template_directory' ) );
+			
 		}
 	}
 	
@@ -362,10 +368,25 @@ class ydApdkPlugin extends YD_Plugin {
 				unset( $dirs[$k] );
 			} else {
 				$dirs[$k] = array(
-						'path' => $theme_root . '/' . $v,
-						'url' => plugins_url( 'themes/' . $v, dirname( __FILE__ ) )
+					'path'	=> $theme_root . '/' . $v,
+					'url'	=> plugins_url( 'themes/' . $v, dirname( __FILE__ ) )
 				);
 			}
+		}
+		
+		echo 'debug: ' . get_stylesheet_directory() . '/appdeck<br/>';
+		
+		/** A custom theme can also be in the appdeck dir of the current child theme or parent theme **/
+		if( is_dir( get_stylesheet_directory() . '/appdeck' ) ) {
+			$dirs[] = array(
+				'path'	=> get_stylesheet_directory() . '/appdeck',
+				'url'	=> get_stylesheet_directory_uri() . '/appdeck'
+			);
+		} elseif( is_dir( get_template_directory() . '/appdeck' ) ) {
+			$dirs[] = array(
+					'path'	=> get_template_directory() . '/appdeck',
+					'url'	=> get_template_directory_uri() . '/appdeck'
+			);
 		}
 	
 		/** Load add-on themes **/
@@ -469,12 +490,20 @@ class ydApdkPlugin extends YD_Plugin {
 		if( !isset( $_SERVER['HTTP_USER_AGENT'] ) || !preg_match( '/appdeck/i', $_SERVER['HTTP_USER_AGENT'] ) )
 			return $current;
 		
+		if( isset( $this->appdeck_settings['use_w3tc'] ) && 'yes' == $this->appdeck_settings['use_w3tc'] )
+			return $current;
+		
 		return $this->appdeck_settings['theme'];
 	}
 	public function var_template_include( $current ){
-		
+				
 		if( !isset( $_SERVER['HTTP_USER_AGENT'] ) || !preg_match( '/appdeck/i', $_SERVER['HTTP_USER_AGENT'] ) )
 			return $current;
+		
+		if( isset( $this->appdeck_settings['use_w3tc'] ) && 'yes' == $this->appdeck_settings['use_w3tc'] )
+			return $current;
+		
+		//echo $current . '<br/>';
 		
 		//$GLOBALS['current_theme_template'] = basename($t);
 		return $this->appdeck_settings['theme'] . '/' . basename( $current );
@@ -487,6 +516,14 @@ class ydApdkPlugin extends YD_Plugin {
 	public function stylesheet( $current ) {
 		if( !isset( $_SERVER['HTTP_USER_AGENT'] ) || !preg_match( '/appdeck/i', $_SERVER['HTTP_USER_AGENT'] ) )
 			return $current;
+	}
+	*/
+	
+	/* not used 
+	public function template_redirect( $template ) {
+		//echo $template . '<br/>';
+		
+		return $template;
 	}
 	*/
 }
