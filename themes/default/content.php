@@ -1,4 +1,4 @@
-<article id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
+<article id="post-<?php the_ID(); ?>" <?php post_class('listing'); ?>>
 
 	<header class="entry-header">
 
@@ -14,7 +14,7 @@
 
 				/** Strip links **/ 
 				'/<\/?a[^>]*>/i', '', 
-				get_the_content()
+				is_search()?get_the_excerpt(''):get_the_content('')
 			);
 			if( has_post_thumbnail() ) {
 

@@ -1,6 +1,7 @@
 /*
 Theme Name: AppDeck Default Theme
 */
+
 .post {
 	clear: both;
 	overflow: hidden;
@@ -10,10 +11,34 @@ Theme Name: AppDeck Default Theme
 .page a {
 	text-decoration: none;
 }
-.post img,
-.page img {
+
+img {
+	max-width: 100%;
+	height: auto;	
+}
+
+.post.listing img,
+.singular img.alignleft {
 	float: left;
 	max-width: 150px;
-	height: auto;
 	margin: 0 10px 10px 0;
+	clear: left;
+}
+.singular img.alignleft {
+	margin-top: 10px;
+}
+
+.singular img.alignright {
+	float: right;
+	max-width: 150px;
+	margin: 10px 0 10px 10px;
+	clear: right;
+}
+
+.singular img.aligncenter,
+.singular img.alignnone {
+	float: right;
+	width: 100%;
+	margin: 10px 0 10px 0;
+	clear: both;
 }
