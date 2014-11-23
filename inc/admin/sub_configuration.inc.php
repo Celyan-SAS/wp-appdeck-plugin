@@ -30,6 +30,12 @@ if ( isset( $_POST['appdeck_account'] ) ) {
 			'theme'	=> sanitize_text_field( $_POST['appdeck_theme'] )
 		)
 	);
+	
+	if( isset( $_POST['use_w3tc'] ) && 'yes' == $_POST['use_w3tc'] ) {
+		$this->appdeck_settings['use_w3tc'] = 'yes';
+	} else {
+		$this->appdeck_settings['use_w3tc'] = 'no';
+	}
 
 	update_option( 'appdeck_credentials',	$this->appdeck_credentials );
 	update_option( 'appdeck_settings',		$this->appdeck_settings );
@@ -152,7 +158,10 @@ if ( isset( $_POST['appdeck_account'] ) ) {
 
 <div class="container">
 
-<p>ici</p>
+<?php if( is_plugin_active( 'w3-total-cache/w3-total-cache.php' ) ) : ?>
+	<p><input type="checkbox" name="use_w3tc" value="yes" <?php if( isset($this->appdeck_settings['use_w3tc']) && 'yes'==$this->appdeck_settings['use_w3tc']) echo 'checked="checked"'; ?>/>&nbsp;<?php echo __( 'Use the W3 Total Cache User Agent Groups feature to switch templates', 'appdeck' ); ?></p>
+	<p><input type="submit" value="<?php echo __('Submit'); ?>" /></p>
+<?php endif; ?>
 
 </div><!--  // / container -->
 </div><!--  // / bootstrap-wpadmin -->
