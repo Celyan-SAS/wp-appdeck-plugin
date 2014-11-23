@@ -12,12 +12,16 @@
 </head>
 <body>
 
-<div data-role="page">
-  <div data-role="content">
-  <?php wp_nav_menu( array( 
-	'theme_location'  => 'appdeck_top',
-	'items_wrap'      => '<ul data-role="listview" data-inset="true" id="%1$s" class="%2$s">%3$s</ul>'
-  ) ); ?>
+<div id="primary" class="content-area" data-role="page" data-theme="a">
+  <div id="content" class="site-content" role="main" data-role="content" data-theme="a">
+  <?php
+	  // Start the Loop.
+	  while ( have_posts() ) : the_post();
+	  
+	  get_template_part( 'content', get_post_format() );
+	  
+	  endwhile;
+  ?>
   </div><!-- /content -->
 </div><!-- /page -->
 
