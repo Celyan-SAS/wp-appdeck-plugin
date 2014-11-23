@@ -1,27 +1,43 @@
 <article id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
-	
+
 	<header class="entry-header">
 
 		<?php
-			if ( is_single() ) :
-				the_title( '<h1 class="entry-title">', '</h1>' );
-			else :
-				the_title( '<h1 class="entry-title"><a href="' . esc_url( get_permalink() ) . '" rel="bookmark">', '</a></h1>' );
-			endif;
+			the_title( '<h2 class="entry-title"><a href="' . esc_url( get_permalink() ) . '" rel="bookmark">', '</a></h2>' );
 		?>
 
 	</header><!-- .entry-header -->
 
-	<?php if ( is_search() ) : ?>
-	<div class="entry-summary" onClick="document.location.href='<?php echo get_permalink(); ?>';">
-		<?php the_excerpt(); ?>
-	</div><!-- .entry-summary -->
-	<?php else : ?>
 	<div class="entry-content" onClick="document.location.href='<?php echo get_permalink(); ?>';">
 		<?php
-			the_content( __( '<span class="meta-nav">[...]</span>', 'appdeck' ) );
+			$content = preg_replace(
+
+				/** Strip links **/ 
+				'/<\/?a[^>]*>/i', '', 
+				get_the_content()
+			);
+			if( has_post_thumbnail() ) {
+
+				the_post_thumbnail( array( 150, 150 ) );
+
+			} else {
+
+				/** Get first image in content **/
+				preg_match(
+					'/<\/?img[^>]*>/i',
+					$content, $matches
+				);
+				if( isset( $matches[0] ) )
+					echo $matches[0];
+			}
+			
+			echo preg_replace(
+			
+				/** Strip images **/
+				'/<\/?img[^>]*>/i', '',
+				$content
+			);
 		?>
 	</div><!-- .entry-content -->
-	<?php endif; ?>
 
 </article><!-- #post-## -->
