@@ -113,6 +113,7 @@ class ydApdkPlugin extends YD_Plugin {
 			/** Template switcher **/
 			add_filter( 'template_include', array( $this, 'var_template_include' ), 1000 );
 			add_filter( 'template_directory', array( $this, 'template_directory' ) );
+			add_filter( 'template_directory_uri', array( $this, 'template_directory_uri' ) );
 			
 		}
 	}
@@ -495,6 +496,16 @@ class ydApdkPlugin extends YD_Plugin {
 		
 		return $this->appdeck_settings['theme'];
 	}
+	public function template_directory_uri( $current ) {
+	
+		if( !isset( $_SERVER['HTTP_USER_AGENT'] ) || !preg_match( '/appdeck/i', $_SERVER['HTTP_USER_AGENT'] ) )
+			return $current;
+	
+		if( isset( $this->appdeck_settings['use_w3tc'] ) && 'yes' == $this->appdeck_settings['use_w3tc'] )
+			return $current;
+	
+		return plugins_url( 'themes/' . basename( $this->appdeck_settings['theme'] ), dirname( __FILE__ ) );
+	}
 	public function var_template_include( $current ){
 				
 		if( !isset( $_SERVER['HTTP_USER_AGENT'] ) || !preg_match( '/appdeck/i', $_SERVER['HTTP_USER_AGENT'] ) )
@@ -506,6 +517,9 @@ class ydApdkPlugin extends YD_Plugin {
 		//echo $current . '<br/>';
 		
 		//$GLOBALS['current_theme_template'] = basename($t);
+		if( !file_exists( $this->appdeck_settings['theme'] . '/' . basename( $current ) ) )
+			return $this->appdeck_settings['theme'] . '/index.php';
+		
 		return $this->appdeck_settings['theme'] . '/' . basename( $current );
 	}
 	/*
