@@ -113,6 +113,7 @@ class ydApdkPlugin extends YD_Plugin {
 			/** Template switcher **/
 			add_filter( 'template_include', array( $this, 'var_template_include' ), 1000 );
 			add_filter( 'template_directory', array( $this, 'template_directory' ) );
+			add_filter( 'stylesheet_directory', array( $this, 'template_directory' ) );
 			add_filter( 'template_directory_uri', array( $this, 'template_directory_uri' ) );
 			
 		}
