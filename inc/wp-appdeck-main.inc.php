@@ -10,6 +10,8 @@ class ydApdkPlugin extends YD_Plugin {
 	
 	const	MENU_ICON	= 'img/rocket.png';
 	
+	static	$add_photobrowser_script;
+	
 	private $submenus	= array(
 		'Dashboard' => 'dashboard',
 		'Advertisement' => 'advertisement',
@@ -116,6 +118,11 @@ class ydApdkPlugin extends YD_Plugin {
 			add_filter( 'stylesheet_directory', array( $this, 'template_directory' ) );
 			add_filter( 'template_directory_uri', array( $this, 'template_directory_uri' ) );
 			
+			/** Add Photo Browser JS in footer of paghes with Gallery **/
+			//TODO: cannot redeclare gallery shortcode ?
+			add_filter( 'post_gallery', array( $this, 'gallery_detect' ) );
+			add_action( 'wp_footer', array( $this, 'print_photobrowser_script'));
+			add_action( 'appdeck_footer', array( $this, 'print_photobrowser_script'));
 		}
 	}
 	
@@ -541,5 +548,91 @@ class ydApdkPlugin extends YD_Plugin {
 		return $template;
 	}
 	*/
+	
+	/**
+	 * Add PhotoBrowser JS in the footer of pages with galleries
+	 *
+	 */
+	public function gallery_detect( $atts, $content = null ) {
+
+		if( isset( $_SERVER['HTTP_USER_AGENT'] ) && preg_match( '/appdeck/i', $_SERVER['HTTP_USER_AGENT'] ) )
+			self::$add_photobrowser_script = true;
+		
+		if( $content )
+			return $content;
+	}
+	public function print_photobrowser_script() {
+		
+		if ( ! self::$add_photobrowser_script )
+			return;
+	
+		/** Load jQuery if not already loaded, and then implement app.photoBrowser **/
+		?>
+			<script>
+			if(typeof jQuery=='undefined') {
+			    var headTag = document.getElementsByTagName("head")[0];
+			    var jqTag = document.createElement('script');
+			    jqTag.type = 'text/javascript';
+			    jqTag.src = 'http://code.jquery.com/jquery.js';
+			    jqTag.onload = myJQueryCode;
+			    headTag.appendChild(jqTag);
+			} else {
+				myJQueryCode();
+			}
+
+			function myJQueryCode() {
+				(function($) {
+					$(document).ready(function() {
+	
+						//console.log( 'starting image detect script' );
+	
+						var tmp = '?tmp=' + Math.random().toString(36).substring(2, 15);
+						var caption = '';
+						var thumbnail = '';
+						var url = '';
+						var images = new Array();
+						
+						$('.gallery .gallery-item').each( function( index ) {
+	
+							caption = $('.gallery-caption', this).text();
+							url = $('a', this).attr('href') + tmp;
+							thumbnail = $('img', this).attr('src') + tmp;
+							
+							//console.log('Gallery item ' + index + ' caption: ' +  caption );
+							//console.log('Gallery item ' + index + ' thumbnail: ' +  thumbnail );
+							//console.log('Gallery item ' + index + ' url: ' +  url );
+	
+							images[index] = {
+								caption: caption,
+								thumbnail: thumbnail,
+								url: url
+							};
+							
+							$(this).click( function( e ) {
+								openPhotoBrowser( e );
+							});
+						});
+						
+						//console.log( 'images: ' );
+						//console.log( images );
+	
+						function openPhotoBrowser( e ) {
+							if( typeof app != 'undefined' && $.isFunction( app.photoBrowser ) ) { 
+								e.preventDefault();
+								app.photoBrowser({
+									bgcolor: '#000000',
+									bgalpha: '0.8',
+									images: images,
+									startIndex: 2
+								});
+								return false;
+							}
+						}
+					});
+				})( jQuery );
+			}
+			</script>
+		<?php
+	}
 }
 ?>

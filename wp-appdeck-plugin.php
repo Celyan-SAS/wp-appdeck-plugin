@@ -2,14 +2,14 @@
 /**
  * @package WP-Appdeck-Plugin
  * @author Yann Dubois / Appdeck
- * @version 0.1.0
+ * @version 0.1.1
  */
 
 /*
  Plugin Name: WP Appdeck Plugin
  Plugin URI: http://www.yann.com/en/wp-plugins/wp-appdeck-plugin
  Description: Turns your WordPress site into a native mobile app for iOS and Android phones
- Version: 0.1.0
+ Version: 0.1.1
  Author: Yann Dubois / Appdeck
  Author URI: http://www.appdeck.mobi/
  License: GPL2
@@ -37,6 +37,8 @@
 
 
 /**
+ Revision 0.1.1 of 2014/11/30:
+ - Added photoBrowser support for galleries
  Revision 0.1.0:
  - Original alpha release 00
  */
@@ -69,7 +71,7 @@ global $yd_apdk;
 $yd_apdk = new ydApdkPlugin(
 	array(
 		'name' 				=> 'WP Appdeck Plugin',
-		'version'			=> '0.1.0',
+		'version'			=> '0.1.1',
 		'has_option_page'	=> false,
 		'option_page_title' => 'Appdeck Settings',
 		'op_donate_block'	=> false,
