@@ -119,7 +119,6 @@ class ydApdkPlugin extends YD_Plugin {
 			add_filter( 'template_directory_uri', array( $this, 'template_directory_uri' ) );
 			
 			/** Add Photo Browser JS in footer of paghes with Gallery **/
-			//TODO: cannot redeclare gallery shortcode ?
 			add_filter( 'post_gallery', array( $this, 'gallery_detect' ) );
 			add_action( 'wp_footer', array( $this, 'print_photobrowser_script'));
 			add_action( 'appdeck_footer', array( $this, 'print_photobrowser_script'));
